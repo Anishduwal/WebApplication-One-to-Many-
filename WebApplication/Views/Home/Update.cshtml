@@ -1,0 +1,104 @@
+﻿@model WebApplication.Models.Customer
+
+@{
+    ViewBag.Title = "Update";
+    
+}
+
+<h2>Update</h2>
+
+<body>
+    @using (Html.BeginForm("Edit", "Home", FormMethod.Post, new { id = "MainForm" }))
+    {
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Please enter the details below.</h3>
+                </div>
+                <div class="panel-body">
+                    <input type="hidden" name="id" value="@Model.id" id="id" class="form-control" />
+                    <div class="form-group col-md-5">
+                        <label>Name</label>
+                        <input type="text" name="Customer_name" value="@Model.Customer_name" id="Customer_name" class="form-control" placeholder="Enter Name" required="" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label>Address</label>
+                        <input type="text" name="Address" value="@Model.Address" id="Address" class="form-control" placeholder="Enter Address" required="" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label>Phone Number</label>
+                        <input type="text" name="Phone_Number" value="@Model.Phone_number" id="Phone_Number" class="form-control" placeholder="Enter Phone number" required="" />
+                    </div>
+                    @foreach (var item in Model.Customer_Order)
+                    {
+                        <div class="input_fields_wrap">
+                            <input type="hidden" value="@item.id" name="Details.index" />
+                            <label>Order Name</label>
+
+                            <input type="text" name="Details[@item.id].Order_name" id="Order_name" value="@item.Order_name" class="form-control" placeholder="Enter Order Name" required="" />
+                        </div>
+
+                    }
+
+                    <div class="form-group col-md-1">
+                        <div style="float: right; display:inline-block;">
+                            <input class="btn btn-primary" name="submitButton" id="btnUpdate" value="Update" type="submit">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </body>
+
+<script type="text/javascript">
+
+@*function Update(id) {
+            $.ajax({
+                async: true,
+                type: 'GET',
+                url: '@Url.Action("Edit", "Home")',
+                data: { ID: id },
+                dataType: 'JSON',
+                contentType: 'application/json, charset=utf-8',
+                success: function (data) {
+                    $('#Customer_name').val(data.Customer_name);
+                    $('#Address').val(data.Address);
+                    $('#Phone_number').val(data.Phone_number);
+                    $('#Order_name').val(data.Order_name);
+                    $('#id').val(data.id);
+                },
+
+                error: function () {
+                    alert("Problem to edit customer details.")
+                }
+            });
+    }*@
+
+    $(function () {
+        $("#btnUpdate").click(function () {
+            var form = $("#MainForm")[0];
+            $postURL = $("#MainForm").attr('action');
+            var data = new FormData(form);
+            $.ajax({
+                type: "POST",
+                enctype: 'multipart/form-data',
+                url: $postURL,
+                data: data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                timeout: 600000,
+                success: function (response) {
+                    var stat = response.Status || true;
+                    if (stat) {
+
+                    }
+                }, error: function (err) {
+
+                }
+            });
+        });
+        return false;
+    });
+    </script>

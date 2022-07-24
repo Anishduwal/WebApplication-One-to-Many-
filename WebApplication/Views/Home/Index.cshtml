@@ -1,0 +1,193 @@
+﻿@model IEnumerable<WebApplication.Models.Customer>
+
+@{
+    ViewBag.Title = "Customer Page";
+}
+
+<h2>Customer Details</h2>
+<body>
+    @using (Html.BeginForm("Create", "Home", FormMethod.Post, new { id="MainForm"}))
+    {
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Please enter the details below.</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group col-md-5">
+                        <label>Name</label>
+                        <input type="text" name="Customer_name" id="Customer_name" class="form-control" placeholder="Enter Name" required="" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label>Address</label>
+                        <input type="text" name="Address" id="Address" class="form-control" placeholder="Enter Address" required="" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label>Phone Number</label>
+                        <input type="text" name="Phone_Number" id="Phone_Number" class="form-control" placeholder="Enter Phone number" required="" />
+                    </div>
+
+                    <div class="input_fields_wrap">
+                        <input type="hidden" value="a_0" name="Details.index" />
+                        <label>Order Name</label>
+                        @*<input type="text" name="Details[a_0].Order_name" id="Order_name" class="form-control" placeholder="Enter Order Name" required="" />*@
+                        @Html.DropDownList("ordername", null, htmlAttributes: new { @class = "form-control search-select", @Name = "OrderDetails", @id = "Order_name", @multiple = "true"})
+                        <button type="button" class="add_field_button">Add</button>
+                    </div>
+
+                    <div class="form-group col-md-1">
+                        <div style="float: right; display:inline-block;">
+                            <h2>Create</h2>
+                            <input class="btn btn-primary" name="submitButton" id="btnSave" value="Save" type="button">
+                        </div>
+                    </div>
+                </div>
+            </div><hr />
+            <table id="tblStudent" class="table table-bordered table-striped table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th align="left" class="productth">ID</th>
+                        <th align="left" class="productth">Name</th>
+                        <th align="left" class="productth">Address</th>
+                        <th align="left" class="productth">Phone number</th>
+                        <th align="left" class="productth">Order name</th>
+                        <th align="left" class="productth">Order date</th>
+                        <th align="left" class="productth">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            @*<td>@Html.DisplayFor(a => item.name)</td>*@
+                            <td>@item.id</td>
+                            <td>@item.Customer_name</td>
+                            <td>@item.Address</td>
+                            <td>@item.Phone_number</td>
+                            @if (item.Customer_Order.Count() > 0)
+                            {
+                                foreach (var order in item.Customer_Order)
+                                {
+                                    if (order.Order_name != null)
+                                    {
+                                        <td>@order.Order_name</td>
+                                    }
+                                    else
+                                    {
+                                        <td>null</td>
+                                    }
+
+                                    if (order.Order_date != null)
+                                    {
+                                        <td>@order.Order_date</td>
+                                    }
+                                    else
+                                    {
+                                        <td>null</td>
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                <td>null</td>
+                                <td>null</td>
+                            }
+
+                        <td>
+                            @Html.ActionLink("Update", "Update", new { id = item.id }) |
+                            <input type="button" value="Delete" name="Delete" onclick="DeleteItem(@item.id)" />
+                        </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <textarea class=" hidden" id="AddSection">
+        <div>
+            <input type="hidden" value="a_{}" name="Details.index" />
+            @Html.DropDownList("ordername", null, "Select Order", htmlAttributes: new { @class = "form-control search-select required", @Name = "Details[a_{x}].Order_name", @id = "Order_name" })
+            <a href="#" class="remove_field">Remove</a>
+        </div>
+</textarea>
+
+
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var max_fields = 10;
+        var wrapper = $(".input_fields_wrap");
+        var add_button = $(".add_field_button");
+
+        var x = 1;
+        $(add_button).click(function (e) {
+            e.preventDefault();
+            if (x < max_fields) {
+                var data = $('#AddSection').val();
+                data = data.replace(/{x}/g, x);               
+                //<input type="text" name="Details[a_' + x + '].Order_name" id="Order_name" placeholder="Enter Order Name" />
+                $(wrapper).append(data);
+                x++;
+            }
+        });
+
+        $(wrapper).on("click", ".remove_field", function (e) {
+            e.preventDefault();
+            $(this).parent('div').remove();
+            x--;
+        });
+    });
+
+    $(function () {
+        /*loaddata();*/
+        $("#btnSave").click(function () {
+            var form = $("#MainForm")[0];
+            $postURL = $("#MainForm").attr('action');
+            var data = new FormData(form);
+            //data = $(this).serialize();
+            $.ajax({
+                type: "POST",
+                enctype: 'multipart/form-data',
+                url: $postURL,
+                data: data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                timeout: 600000,
+                success: function (response) {
+                    var stat = response.Status || true;
+                    if (stat) {
+
+                    }
+                }, error: function (err) {
+
+                }
+            });
+            });
+            return false;
+    });
+
+    function DeleteItem(id) {
+            var del = { id: id };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Delete", "Home")',
+                data: JSON.stringify(del),
+                contentType: 'application/json, charset= utf-8',
+                success: function (data) {
+                    alert(data.Message);
+                },
+                error: function () {
+                    alert('Could not delete the employee.')
+                }
+            });
+    }
+
+
+
+</script>

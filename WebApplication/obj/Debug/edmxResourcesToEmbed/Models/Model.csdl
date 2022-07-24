@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="DemoModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="DemoEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Customers" EntityType="DemoModel.Customer" />
+    <EntitySet Name="Customer_Order" EntityType="DemoModel.Customer_Order" />
+    <AssociationSet Name="FK_Customer_Order_Customer" Association="DemoModel.FK_Customer_Order_Customer">
+      <End Role="Customer" EntitySet="Customers" />
+      <End Role="Customer_Order" EntitySet="Customer_Order" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Customer">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Customer_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Address" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Phone_number" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Customer_Order" Relationship="DemoModel.FK_Customer_Order_Customer" FromRole="Customer" ToRole="Customer_Order" />
+  </EntityType>
+  <EntityType Name="Customer_Order">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Cid" Type="Int64" />
+    <Property Name="Order_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Order_date" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Customer" Relationship="DemoModel.FK_Customer_Order_Customer" FromRole="Customer_Order" ToRole="Customer" />
+  </EntityType>
+  <Association Name="FK_Customer_Order_Customer">
+    <End Type="DemoModel.Customer" Role="Customer" Multiplicity="0..1" />
+    <End Type="DemoModel.Customer_Order" Role="Customer_Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Customer">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Customer_Order">
+        <PropertyRef Name="Cid" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
