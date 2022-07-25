@@ -6,7 +6,8 @@
 
 <h2>Customer Details</h2>
 <body>
-    @using (Html.BeginForm("Create", "Home", FormMethod.Post, new { id="MainForm"}))
+    
+    @using (Html.BeginForm("Create", "Home", FormMethod.Post, new { id = "MainForm" }))
     {
         <div class="col-md-12">
             <div class="panel panel-primary">
@@ -31,8 +32,8 @@
                         <input type="hidden" value="a_0" name="Details.index" />
                         <label>Order Name</label>
                         @*<input type="text" name="Details[a_0].Order_name" id="Order_name" class="form-control" placeholder="Enter Order Name" required="" />*@
-                        @Html.DropDownList("ordername", null, htmlAttributes: new { @class = "form-control search-select", @Name = "OrderDetails", @id = "Order_name", @multiple = "true"})
-                        <button type="button" class="add_field_button">Add</button>
+                        @Html.DropDownList("ordername", null, htmlAttributes: new { @class = "form-control search-select", @Name = "OrderDetails", @id = "Order_name", @multiple = "true" })
+                        <button type="submit" class="add_field_button">Add</button>
                     </div>
 
                     <div class="form-group col-md-1">
@@ -43,6 +44,14 @@
                     </div>
                 </div>
             </div><hr />
+            <form asp-controller="Customer" asp-action="Index" method="get">
+                <p>
+                    Name: <input type="text" name="SearchString" id="namesearch" placeholder="Search Customer Name" />
+                    Address: <input type="text" name="SearchString" id="addresssearch" placeholder="Search Address" />
+                    Phone Number: <input type="text" name="SearchString" id="numbersearch" placeholder="Search Phone Number" />
+                    @*<input type="button" value="Filter" />*@
+                </p>
+            </form>
             <table id="tblStudent" class="table table-bordered table-striped table-responsive table-hover">
                 <thead>
                     <tr>
@@ -94,11 +103,12 @@
                                 <td>null</td>
                             }
 
-                        <td>
-                            @Html.ActionLink("Update", "Update", new { id = item.id }) |
-                            <input type="button" value="Delete" name="Delete" onclick="DeleteItem(@item.id)" />
-                        </td>
+                            <td>
+                                @Html.ActionLink("Update", "Update", new { id = item.id }) |
+                                <input type="button" value="Delete" name="Delete" onclick="DeleteItem(@item.id)" />
+                            </td>
                         </tr>
+
 
                     }
                 </tbody>
@@ -107,10 +117,10 @@
     }
 
     <textarea class=" hidden" id="AddSection">
-        <div>
-            <input type="hidden" value="a_{}" name="Details.index" />
+    <div>
+    <input type="hidden" value="a_{}" name="Details.index" />
             @Html.DropDownList("ordername", null, "Select Order", htmlAttributes: new { @class = "form-control search-select required", @Name = "Details[a_{x}].Order_name", @id = "Order_name" })
-            <a href="#" class="remove_field">Remove</a>
+    <a href="#" class="remove_field">Remove</a>
         </div>
 </textarea>
 
@@ -118,6 +128,51 @@
 </body>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
+
+    $("#namesearch").on("keyup", function () {
+        var txtenter = $(this).val();
+        $("table tr").each(function (results) {
+            if (results !== 0) {
+                var id = $(this).find("td:nth-child(2)").text();
+                if (id.indexOf(txtenter) !== 0 && id.toLowerCase().indexOf(txtenter.toLowerCase()) < 0) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            }
+        });
+    });
+
+    $("#addresssearch").on("keyup", function () {
+        var txtenter = $(this).val();
+        $("table tr").each(function (results) {
+            if (results !== 0) {
+                var id = $(this).find("td:nth-child(3)").text();
+                if (id.indexOf(txtenter) !== 0 && id.toLowerCase().indexOf(txtenter.toLowerCase()) < 0) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            }
+        });
+    });
+
+    $("#numbersearch").on("keyup", function () {
+        var txtenter = $(this).val();
+        $("table tr").each(function (results) {
+            if (results !== 0) {
+                var id = $(this).find("td:nth-child(4)").text();
+                if (id.indexOf(txtenter) !== 0 && id.toLowerCase().indexOf(txtenter.toLowerCase()) < 0) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            }
+        });
+    });
 
     $(document).ready(function () {
         var max_fields = 10;
